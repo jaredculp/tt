@@ -1,0 +1,22 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          cache: 'pip'
+
+      - run: pip install -r requirements.txt
+
+      - uses: microsoft/playwright-github-action@v1
+
+      - run: pytest book_it.py
