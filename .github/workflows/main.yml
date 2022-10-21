@@ -21,7 +21,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - uses: microsoft/playwright-github-action@v1
+      - run: playwright install
 
       - run: pytest book_it.py
 
