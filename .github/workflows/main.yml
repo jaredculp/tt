@@ -24,10 +24,10 @@ jobs:
 
       - run: playwright install chromium
 
-      - run: pytest book_it.py
+      - run: python book_it.py
 
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: test-artifacts
+          name: tt-artifacts
           path: trace.zip
