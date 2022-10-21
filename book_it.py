@@ -59,10 +59,11 @@ def run(playwright: Playwright) -> None:
         # book
         # page.get_by_text("Complete your purchase").click()
 
-        # TODO guard
+    finally:
+        # TODO guard and move outside finally
         with open(TT_OUTPUT, "w") as f:
             f.write(next_thurs().strftime(TT_FORMAT))
-    finally:
+
         context.tracing.stop(path="trace.zip")
         context.close()
         browser.close()
