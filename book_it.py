@@ -3,9 +3,9 @@ import os
 
 from playwright.sync_api import Playwright, sync_playwright
 
-EMAIL = os.environ.get["TT_EMAIL"]
-NAME = os.environ.get["TT_NAME"]
-PHONE = os.environ.get["TT_PHONE"]
+EMAIL = os.environ["TT_EMAIL"]
+NAME = os.environ["TT_NAME"]
+PHONE = os.environ["TT_PHONE"]
 
 
 def next_thurs():
