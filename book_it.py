@@ -72,6 +72,6 @@ def run(playwright: Playwright) -> None:
 with sync_playwright() as playwright:
     # only run if we don't have a tee time for next thursday
     with open(TT_OUTPUT, "r") as f:
-        tee_time = f.read()
+        tee_time = f.read().strip()
         if datetime.datetime.strptime(tee_time, TT_FORMAT).date() < next_thurs():
             run(playwright)
