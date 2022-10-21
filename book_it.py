@@ -3,9 +3,9 @@ import os
 
 from playwright.sync_api import Playwright, sync_playwright
 
-EMAIL = os.environ["TT_EMAIL"]
-NAME = os.environ["TT_NAME"]
-PHONE = os.environ["TT_PHONE"]
+EMAIL = os.environ.get["TT_EMAIL"]
+NAME = os.environ.get["TT_NAME"]
+PHONE = os.environ.get["TT_PHONE"]
 
 
 def next_thurs():
@@ -20,41 +20,46 @@ def next_thurs():
 def run(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
-    page = context.new_page()
-    page.goto(
-        f"https://jeffersonville-golf-club.book.teeitup.golf/?course=5968&date={next_thurs()}&golfers=4&end=09&start=07&transportation=Riding"
-    )
 
-    # grab the earliest tee time
-    page.get_by_text("Book Now").first.click()
+    try:
+        context.tracing.start(screenshots=True, snapshots=True)
 
-    # book for 4 people
-    page.get_by_test_id("button-value-4").click()
-    page.get_by_text("Proceed to Checkout").click()
-    page.wait_for_url("https://jeffersonville-golf-club.book.teeitup.golf/login")
+        page = context.new_page()
+        page.goto(
+            f"https://jeffersonville-golf-club.book.teeitup.golf/?course=5968&date={next_thurs()}&golfers=4&end=09&start=07&transportation=Riding"
+        )
 
-    # fill out email as guest
-    page.get_by_label("Email Address").click()
-    page.get_by_label("Email Address").fill(EMAIL)
-    page.get_by_text("Continue as Guest").click()
-    page.wait_for_url("https://jeffersonville-golf-club.book.teeitup.golf/checkout")
+        # grab the earliest tee time
+        page.get_by_text("Book Now").first.click()
 
-    # fill out name
-    page.locator('input[name="Payment\\.Name"]').click()
-    page.locator('input[name="Payment\\.Name"]').fill(NAME)
+        # book for 4 people
+        page.get_by_test_id("button-value-4").click()
+        page.get_by_text("Proceed to Checkout").click()
+        page.wait_for_url("https://jeffersonville-golf-club.book.teeitup.golf/login")
 
-    # fill out phone
-    page.get_by_test_id("mobile-phone-number-component").click()
-    page.get_by_test_id("mobile-phone-number-component").fill(PHONE)
+        # fill out email as guest
+        page.get_by_label("Email Address").click()
+        page.get_by_label("Email Address").fill(EMAIL)
+        page.get_by_text("Continue as Guest").click()
+        page.wait_for_url("https://jeffersonville-golf-club.book.teeitup.golf/checkout")
 
-    # agree
-    page.get_by_text("I agree to the Terms and Conditions").check()
+        # fill out name
+        page.locator('input[name="Payment\\.Name"]').click()
+        page.locator('input[name="Payment\\.Name"]').fill(NAME)
 
-    # book
-    # page.get_by_text("Complete your purchase").click()
+        # fill out phone
+        page.get_by_test_id("mobile-phone-number-component").click()
+        page.get_by_test_id("mobile-phone-number-component").fill(PHONE)
 
-    context.close()
-    browser.close()
+        # agree
+        page.get_by_text("I agree to the Terms and Conditions").check()
+
+        # book
+        # page.get_by_text("Complete your purchase").click()
+    finally:
+        context.tracing.stop(path="trace.zip")
+        context.close()
+        browser.close()
 
 
 with sync_playwright() as playwright:

@@ -7,6 +7,10 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
+    env:
+      TT_EMAIL: 'foo@bar.com'
+      TT_NAME: 'Foo Bar'
+      TT_PHONE: '+1 (111) 111-1111'
 
     steps:
       - uses: actions/checkout@v3
@@ -20,3 +24,9 @@ jobs:
       - uses: microsoft/playwright-github-action@v1
 
       - run: pytest book_it.py
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: test-artifacts
+          path: trace.zip
