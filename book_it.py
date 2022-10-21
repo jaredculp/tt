@@ -6,6 +6,8 @@ from playwright.sync_api import Playwright, sync_playwright
 EMAIL = os.environ["TT_EMAIL"]
 NAME = os.environ["TT_NAME"]
 PHONE = os.environ["TT_PHONE"]
+TT_FORMAT = "%m-%d-%Y"
+TT_OUTPUT = "latest-tee-time.txt"
 
 
 def next_thurs():
@@ -56,6 +58,10 @@ def run(playwright: Playwright) -> None:
 
         # book
         # page.get_by_text("Complete your purchase").click()
+
+        # TODO guard
+        with open(TT_OUTPUT, "w") as f:
+            f.write(next_thurs().strftime(TT_FORMAT))
     finally:
         context.tracing.stop(path="trace.zip")
         context.close()
@@ -63,4 +69,8 @@ def run(playwright: Playwright) -> None:
 
 
 with sync_playwright() as playwright:
-    run(playwright)
+    # only run if we don't have a tee time for next thursday
+    with open(TT_OUTPUT, "r") as f:
+        tee_time = f.read()
+        if datetime.datetime.strptime(tee_time, TT_FORMAT).date() < next_thurs():
+            run(playwright)
